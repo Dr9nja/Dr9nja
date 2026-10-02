@@ -36,7 +36,7 @@ def generate_widget(data):
     repos = data["user"].get("public_repos", 0)
     followers = data["user"].get("followers", 0)
 
-    return f'''<svg xmlns="http://w3.org" width="{width}" height="{height}" viewBox="0 0 {width} {height}">
+    return f'''<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}">
 <rect width="{width}" height="{height}" rx="12" fill="#fff" stroke="#e8e8ed" stroke-width="1"/>
 <text x="24" y="40" font-family="Arial, sans-serif" font-size="18" font-weight="600" fill="#1d1d1f">{name}</text>
 <text x="24" y="64" font-family="Arial, sans-serif" font-size="13" fill="#86868b">@{USERNAME} · {repos} repos · {followers} followers</text>
