@@ -4,7 +4,7 @@ import os
 import requests
 from collections import defaultdict
 
-USERNAME = os.environ.get("GITHUB_USERNAME", "your-username")
+USERNAME = os.environ.get("GITHUB_USERNAME", "Dr9nja")
 TOKEN = os.environ.get("GITHUB_TOKEN", "")
 OUTPUT = os.environ.get("OUTPUT_DIR", ".") 
 
