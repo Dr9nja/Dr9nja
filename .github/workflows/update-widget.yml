@@ -1,0 +1,39 @@
+name: Update Profile Widget
+
+on:
+  schedule:
+    - cron: '0 */1 * * *' # Runs automatically every 1 hours
+  workflow_dispatch: # Allows me to trigger when i wanna to
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # Allows saving
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+
+    - name: Install Dependencies
+      run: pip install requests
+
+    - name: Generate Widget SVG
+      env:
+        GITHUB_USERNAME: ${{ github.repository_owner }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Automatically uses the secure temporary token
+        OUTPUT_DIR: '.'
+      run: python generate_widget.py
+
+    - name: Commit and Push Changes
+      run: |
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "41898282+github-actions[bot]@://github.com"
+        git add my-widget.svg
+        git diff-index --quiet HEAD || git commit -m "Automated profile widget update"
+        git push
