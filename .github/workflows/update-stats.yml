@@ -1,0 +1,145 @@
+name: Update GitHub Stats Card
+
+on:
+  schedule:
+    - cron: '0 0 * * *' # Runs every day at midnight
+  workflow_dispatch: # Allows manual trigger
+
+jobs:
+  update-card:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Fetch Data and Generate SVGs
+        env:
+          GH_TOKEN: ${{ secrets.METRICS_TOKEN }}
+        run: |
+          node -e "
+          const fs = require('fs');
+
+          async function run() {
+            // 1. Fetch repositories for the user
+            const username = '${{ github.repository_owner }}';
+            const headers = { 'Authorization': \`token \${process.env.GH_TOKEN}\` };
+            
+            const repoRes = await fetch(\`https://api.github.com/users/\${username}/repos?per_page=100\`, { headers });
+            if (!repoRes.ok) throw new Error('Failed to fetch repos');
+            const repos = await repoRes.json();
+            
+            const nonForkRepos = repos.filter(r => !r.fork);
+            const totalRepos = nonForkRepos.length;
+
+            // 2. Fetch language bytes for each repository
+            const langData = {};
+            for (const repo of nonForkRepos) {
+              const langRes = await fetch(repo.languages_url, { headers });
+              if (langRes.ok) {
+                const languages = await langRes.json();
+                for (const [lang, bytes] of Object.entries(languages)) {
+                  langData[lang] = (langData[lang] || 0) + bytes;
+                }
+              }
+            }
+
+            // 3. Sort languages and pick top 5
+            const sortedLangs = Object.entries(langData)
+              .sort((a, b) => b[1] - a[1])
+              .slice(0, 5);
+
+            const totalBytes = sortedLangs.reduce((sum, [_, bytes]) => sum + bytes, 0);
+
+            // GitHub-approved color palette mapping
+            const colors = {
+              'JavaScript': '#f1e05a', 'Python': '#3572A5', 'TypeScript': '#3178c6',
+              'HTML': '#e34c26', 'CSS': '#563d7c', 'Go': '#00ADD8', 'Rust': '#dea584',
+              'Java': '#b07219', 'C++': '#f34b7d', 'C#': '#178600', 'Ruby': '#701516'
+            };
+            const defaultColor = '#858585';
+
+            // 4. Calculate layout geometries
+            let currentX = 24;
+            const maxBarWidth = 552;
+            const barSegments = [];
+            const legendItems = [];
+
+            sortedLangs.forEach(([lang, bytes]) => {
+              const pct = totalBytes > 0 ? (bytes / totalBytes) : 0;
+              const width = parseFloat((maxBarWidth * pct).toFixed(1));
+              const pctString = (pct * 100).toFixed(1) + '%';
+              const color = colors[lang] || defaultColor;
+
+              barSegments.push(\`<rect x=\"\${currentX}\" y=\"80\" width=\"\${width}\" height=\"10\" rx=\"5\" fill=\"\${color}\" />\`);
+              legendItems.push({ lang, pctString, color });
+              currentX = parseFloat((currentX + width).toFixed(1));
+            });
+
+            // 5. Generate Legend UI blocks
+            let legendSvg = '';
+            legendItems.forEach((item, index) => {
+              const col = index % 3;
+              const row = Math.floor(index / 3);
+              const xPos = 24 + (col * 186);
+              const yPos = 125 + (row * 35);
+
+              legendSvg += \`
+              <g transform=\"translate(\${xPos}, \${yPos})\">
+                <circle cx=\"5\" cy=\"-5\" r=\"5\" fill=\"\${item.color}\"/>
+                <text x=\"18\" y=\"0\" class=\"lang-text\">\${item.lang} <tspan class=\"pct-text\">\${item.pctString}</tspan></text>
+              </g>\`;
+            });
+
+            // 6. Assembly Templates
+            const lightSvg = \`<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"600\" height=\"210\" viewBox=\"0 0 600 210\">
+  <style>
+    .title { font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 600; fill: #1d1d1f; }
+    .stat-text { font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, monospace; font-size: 13px; fill: #57606a; }
+    .lang-text { font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Helvetica, Arial, sans-serif; font-size: 13px; font-weight: 500; fill: #24292f; }
+    .pct-text { font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, monospace; font-size: 12px; fill: #57606a; }
+  </style>
+  <rect width=\"600\" height=\"210\" rx=\"12\" fill=\"#fefefeff\" stroke=\"#e8e8ed\" stroke-width=\"1\"/>
+  <text x=\"24\" y=\"36\" class=\"title\">\${username}</text>
+  <text x=\"24\" y=\"58\" class=\"stat-text\">@\${username} · \${totalRepos} repos</text>
+  <g id=\"progress-bar\">
+    \${barSegments.join('\n    ')}
+  </g>
+  \${legendSvg}
+</svg>\`;
+
+            const darkSvg = \`<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"600\" height=\"210\" viewBox=\"0 0 600 210\">
+  <style>
+    .title { font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 600; fill: #c9d1d9; }
+    .stat-text { font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, monospace; font-size: 13px; fill: #8b949e; }
+    .lang-text { font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Helvetica, Arial, sans-serif; font-size: 13px; font-weight: 500; fill: #f0f6fc; }
+    .pct-text { font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, monospace; font-size: 12px; fill: #8b949e; }
+  </style>
+  <rect width=\"600\" height=\"210\" rx=\"12\" fill=\"#0d1117\" stroke=\"#30363d\" stroke-width=\"1\"/>
+  <text x=\"24\" y=\"36\" class=\"title\">\${username}</text>
+  <text x=\"24\" y=\"58\" class=\"stat-text\">@\${username} · \${totalRepos} repos</text>
+  <g id=\"progress-bar\">
+    \${barSegments.join('\n    ')}
+  </g>
+  \${legendSvg}
+</svg>\`;
+
+            fs.writeFileSync('card-light.svg', lightSvg);
+            fs.writeFileSync('card-dark.svg', darkSvg);
+            console.log('SVGs generated successfully!');
+          }
+
+          run().catch(err => { console.error(err); process.exit(1); });
+          "
+
+      - name: Commit and Push Changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add card-light.svg card-dark.svg
+          git diff-index --quiet HEAD || git commit -m "Update dynamic language profile cards [skip ci]"
+          git push
