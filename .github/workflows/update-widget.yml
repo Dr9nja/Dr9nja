@@ -20,7 +20,7 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-          cache: 'pip' #forgot to add with python things :P
+          #cache: 'pip' #forgot to add with python things :P
 
       - name: Fetch Data and Generate SVG
         env:
