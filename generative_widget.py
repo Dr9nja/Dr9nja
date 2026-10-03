@@ -1,56 +1,533 @@
 #code from https://dev.to/iammastercraft/build-your-own-github-profile-widgets-from-scratch-2e3h#11-project-template
-#edited by Dr9nja, 02.10.26
+#edited by Dr9nja, 03.10.26
 import os
 import requests
 from collections import defaultdict
+from datetime import datetime, timedelta, timezone
 
 USERNAME = os.environ.get("GITHUB_USERNAME", "Dr9nja")
 TOKEN = os.environ.get("GITHUB_TOKEN", "")
-OUTPUT = os.environ.get("OUTPUT_DIR", ".") 
+OUTPUT = os.environ.get("OUTPUT_DIR", ".")
+
+
+# ============================================================
+# GitHub REST API
+# ============================================================
 
 def github_get(endpoint, params=None):
-    headers = {"Accept": "application/vnd.github.v3+json"}
+    headers = {
+        "Accept": "application/vnd.github+json"
+    }
+
     if TOKEN:
-        headers["Authorization"] = f"token {TOKEN}"
-    resp = requests.get(f"https://api.github.com{endpoint}", #the problem was that it has to speak with API, not the site :P
-                        headers=headers, params=params, timeout=30)
-  
+        headers["Authorization"] = f"Bearer {TOKEN}"
+
+    resp = requests.get(
+        f"https://api.github.com{endpoint}",
+        headers=headers,
+        params=params,
+        timeout=30
+    )
+
     return resp.json() if resp.status_code == 200 else {}
 
+
+# ============================================================
+# GitHub GraphQL API
+# Used for commits + contribution streak
+# ============================================================
+
+def github_graphql(query, variables=None):
+    if not TOKEN:
+        return {}
+
+    headers = {
+        "Authorization": f"Bearer {TOKEN}",
+        "Content-Type": "application/json"
+    }
+
+    resp = requests.post(
+        "https://api.github.com/graphql",
+        headers=headers,
+        json={
+            "query": query,
+            "variables": variables or {}
+        },
+        timeout=30
+    )
+
+    if resp.status_code != 200:
+        return {}
+
+    result = resp.json()
+
+    if "errors" in result:
+        print("GraphQL error:", result["errors"])
+        return {}
+
+    return result.get("data", {})
+
+
+# ============================================================
+# Fetch everything
+# ============================================================
+
 def fetch_data():
+
+    # --------------------------------------------------------
+    # Profile
+    # --------------------------------------------------------
+
     user = github_get(f"/users/{USERNAME}")
-    repos = github_get(f"/users/{USERNAME}/repos",
-                       {"per_page": 100, "sort": "updated"})
+
+    # --------------------------------------------------------
+    # Repositories
+    # --------------------------------------------------------
+
+    repos = github_get(
+        f"/users/{USERNAME}/repos",
+        {
+            "per_page": 100,
+            "sort": "updated"
+        }
+    )
+
+    # --------------------------------------------------------
+    # Languages
+    # --------------------------------------------------------
+
     languages = defaultdict(int)
+
     for repo in (repos if isinstance(repos, list) else []):
+
         if not repo.get("fork"):
+
             langs = github_get(
-                f"/repos/{USERNAME}/{repo['name']}/languages")
+                f"/repos/{USERNAME}/{repo['name']}/languages"
+            )
+
             for lang, count in langs.items():
                 languages[lang] += count
-    return {"user": user, "repos": repos, "languages": dict(languages)}
+
+    # --------------------------------------------------------
+    # Contributions
+    # --------------------------------------------------------
+
+    commits = 0
+    streak = 0
+
+    if TOKEN:
+
+        year = datetime.now(timezone.utc).year
+
+        query = """
+        query($login: String!, $from: DateTime!, $to: DateTime!) {
+          user(login: $login) {
+            contributionsCollection(from: $from, to: $to) {
+
+              totalCommitContributions
+
+              contributionCalendar {
+                weeks {
+                  contributionDays {
+                    date
+                    contributionCount
+                  }
+                }
+              }
+            }
+          }
+        }
+        """
+
+        variables = {
+            "login": USERNAME,
+            "from": f"{year}-01-01T00:00:00Z",
+            "to": f"{year}-12-31T23:59:59Z"
+        }
+
+        data = github_graphql(query, variables)
+
+        try:
+
+            contributions = (
+                data["user"]["contributionsCollection"]
+            )
+
+            commits = contributions["totalCommitContributions"]
+
+            # ------------------------------------------------
+            # Flatten contribution calendar
+            # ------------------------------------------------
+
+            contribution_days = []
+
+            for week in contributions["contributionCalendar"]["weeks"]:
+                for day in week["contributionDays"]:
+                    contribution_days.append(day)
+
+            # Dates that have at least one contribution
+            contribution_dates = {
+                day["date"]
+                for day in contribution_days
+                if day["contributionCount"] > 0
+            }
+
+            # ------------------------------------------------
+            # Calculate current streak
+            # ------------------------------------------------
+
+            today = datetime.now(timezone.utc).date()
+
+            if today.isoformat() in contribution_dates:
+                current_date = today
+
+            elif (
+                (today - timedelta(days=1)).isoformat()
+                in contribution_dates
+            ):
+                current_date = today - timedelta(days=1)
+
+            else:
+                current_date = None
+
+            if current_date:
+
+                while current_date.isoformat() in contribution_dates:
+
+                    streak += 1
+                    current_date -= timedelta(days=1)
+
+        except (KeyError, TypeError):
+
+            commits = 0
+            streak = 0
+
+    return {
+        "user": user,
+        "repos": repos,
+        "languages": dict(languages),
+        "commits": commits,
+        "streak": streak
+    }
+
+
+# ============================================================
+# Generate SVG
+# ============================================================
 
 def generate_widget(data):
-    width, height = 600, 120
-    name = data["user"].get("name", USERNAME)
-    repos = data["user"].get("public_repos", 0)
-    followers = data["user"].get("followers", 0)
 
-    return f'''<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}">
-<rect width="{width}" height="{height}" rx="12" fill="#fff" stroke="#e8e8ed" stroke-width="1"/>
-<text x="24" y="40" font-family="Arial, sans-serif" font-size="18" font-weight="600" fill="#1d1d1f">{name}</text>
-<text x="24" y="64" font-family="Arial, sans-serif" font-size="13" fill="#86868b">@{USERNAME} · {repos} repos · {followers} followers</text>
-<text x="24" y="96" font-family="Arial, sans-serif" font-size="12" fill="#aeaeb2">{len(data["languages"])} languages across all repositories</text>
+    width, height = 600, 210
+
+    # --------------------------------------------------------
+    # User information
+    # --------------------------------------------------------
+
+    name = data["user"].get("name") or USERNAME
+
+    repos = data["user"].get(
+        "public_repos",
+        0
+    )
+
+    commits = data.get(
+        "commits",
+        0
+    )
+
+    streak = data.get(
+        "streak",
+        0
+    )
+
+    languages = data.get(
+        "languages",
+        {}
+    )
+
+    # --------------------------------------------------------
+    # Sort languages
+    # --------------------------------------------------------
+
+    sorted_languages = sorted(
+        languages.items(),
+        key=lambda item: item[1],
+        reverse=True
+    )
+
+    top_languages = sorted_languages[:6]
+
+    total = sum(
+        count
+        for _, count in top_languages
+    )
+
+    language_data = []
+
+    for language, count in top_languages:
+
+        percentage = (
+            count / total * 100
+            if total
+            else 0
+        )
+
+        language_data.append(
+            (language, percentage)
+        )
+
+    # Fill remaining slots
+    while len(language_data) < 6:
+        language_data.append(
+            ("N/A", 0)
+        )
+
+    # --------------------------------------------------------
+    # Colors
+    # --------------------------------------------------------
+
+    colors = [
+        "#242424ff",
+        "#525252ff",
+        "#6a6a6aff",
+        "#797979ff",
+        "#acacacff",
+        "#c2c2c2ff"
+    ]
+
+    # --------------------------------------------------------
+    # Progress bar
+    # --------------------------------------------------------
+
+    bar_x = 24
+    bar_y = 80
+    bar_width = 552
+
+    progress_bar = []
+
+    current_x = bar_x
+
+    for (_, percentage), color in zip(
+        language_data,
+        colors
+    ):
+
+        segment_width = (
+            bar_width * percentage / 100
+        )
+
+        if segment_width > 0:
+
+            progress_bar.append(
+                f'''
+    <rect
+      x="{current_x:.2f}"
+      y="{bar_y}"
+      width="{segment_width:.2f}"
+      height="10"
+      fill="{color}"
+    />'''
+            )
+
+        current_x += segment_width
+
+    # --------------------------------------------------------
+    # Legend
+    # --------------------------------------------------------
+
+    positions = [
+        (24, 125),
+        (210, 125),
+        (390, 125),
+        (24, 160),
+        (210, 160),
+        (390, 160)
+    ]
+
+    legend = []
+
+    for (
+        (language, percentage),
+        color,
+        (x, y)
+    ) in zip(
+        language_data,
+        colors,
+        positions
+    ):
+
+        legend.append(
+            f'''
+  <g transform="translate({x}, {y})">
+    <circle
+      cx="5"
+      cy="-5"
+      r="5"
+      fill="{color}"
+    />
+
+    <text
+      x="18"
+      y="0"
+      class="lang-text"
+    >
+      {language}
+      <tspan class="pct-text">
+        {percentage:.1f}%
+      </tspan>
+    </text>
+  </g>
+'''
+        )
+
+    # --------------------------------------------------------
+    # SVG
+    # --------------------------------------------------------
+
+    return f'''
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="{width}"
+  height="{height}"
+  viewBox="0 0 {width} {height}"
+>
+
+  <style>
+
+    .title {{
+      font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Helvetica,
+        Arial,
+        sans-serif;
+
+      font-size: 18px;
+      font-weight: 600;
+      fill: #1d1d1f;
+    }}
+
+    .stat-text {{
+      font-family:
+        ui-monospace,
+        SFMono-Regular,
+        SF Mono,
+        Menlo,
+        Consolas,
+        monospace;
+
+      font-size: 13px;
+      fill: #57606a;
+    }}
+
+    .lang-text {{
+      font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Helvetica,
+        Arial,
+        sans-serif;
+
+      font-size: 13px;
+      font-weight: 500;
+      fill: #24292f;
+    }}
+
+    .pct-text {{
+      font-family:
+        ui-monospace,
+        SFMono-Regular,
+        SF Mono,
+        Menlo,
+        Consolas,
+        monospace;
+
+      font-size: 12px;
+      fill: #57606a;
+    }}
+
+  </style>
+
+
+  <!-- Background Card -->
+
+  <rect
+    width="600"
+    height="210"
+    rx="12"
+    fill="#fefefeff"
+    stroke="#e8e8ed"
+    stroke-width="1"
+  />
+
+
+  <!-- Header Info -->
+
+  <text
+    x="24"
+    y="36"
+    class="title"
+  >
+    {name}
+  </text>
+
+
+  <text
+    x="24"
+    y="58"
+    class="stat-text"
+  >
+    @{USERNAME} · {repos} repos · {commits} commits · {streak} streak in days
+  </text>
+
+
+  <!-- Multi-Color Progress Bar -->
+
+  <g id="progress-bar">
+
+    {''.join(progress_bar)}
+
+  </g>
+
+
+  <!-- Legend -->
+
+  {''.join(legend)}
+
+
 </svg>
-''' #fixing this nasty code :P
-    #some design changes!! 03.10.26
+'''
 
+
+# ============================================================
+# Main
+# ============================================================
 
 if __name__ == "__main__":
-    os.makedirs(OUTPUT, exist_ok=True)
+
+    os.makedirs(
+        OUTPUT,
+        exist_ok=True
+    )
+
     data = fetch_data()
+
     svg = generate_widget(data)
-    path = os.path.join(OUTPUT, "my-widget.svg")
-    with open(path, "w") as f:
+
+    path = os.path.join(
+        OUTPUT,
+        "my-widget.svg"
+    )
+
+    with open(
+        path,
+        "w",
+        encoding="utf-8"
+    ) as f:
+
         f.write(svg)
+
     print(f"Generated {path}")
