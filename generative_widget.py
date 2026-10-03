@@ -12,7 +12,7 @@ def github_get(endpoint, params=None):
     headers = {"Accept": "application/vnd.github.v3+json"}
     if TOKEN:
         headers["Authorization"] = f"token {TOKEN}"
-    resp = requests.get(f"https://github.com{endpoint}",
+    resp = requests.get(f"https://api.github.com{endpoint}", #the problem was that it has to speak with API, not the site :P
                         headers=headers, params=params, timeout=30)
   
     return resp.json() if resp.status_code == 200 else {}
@@ -43,6 +43,7 @@ def generate_widget(data):
 <text x="24" y="96" font-family="Arial, sans-serif" font-size="12" fill="#aeaeb2">{len(data["languages"])} languages across all repositories</text>
 </svg>
 ''' #fixing this nasty code :P
+    #some design changes!! 03.10.26
 
 
 if __name__ == "__main__":
