@@ -1,39 +1,236 @@
-name: Update Profile Widget
+name: Update Stats Card
 
 on:
   schedule:
-    - cron: '0 */1 * * *' # Runs automatically every 1 hours
-  workflow_dispatch: # Allows me to trigger when i wanna to
+    - cron: '0 */2 * * *' # Every 2 hours
+  workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
-  build:
+  update-card:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write # Allows saving
 
     steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v4
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.10'
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
 
-    - name: Install Dependencies
-      run: pip install requests
+      - name: Fetch Data and Generate SVG
+        env:
+          GH_TOKEN: ${{ secrets.METRICS_TOKEN }}
+          GITHUB_USERNAME: ${{ github.repository_owner }}
+        run: |
+          node <<'EOF'
+          const fs = require('fs');
 
-    - name: Generate Widget SVG
-      env:
-        GITHUB_USERNAME: ${{ github.repository_owner }}
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Automatically uses the secure temporary token
-        OUTPUT_DIR: '.'
-      run: python generative_widget.py
+          async function run() {
+            const username = process.env.GITHUB_USERNAME;
 
-    - name: Commit and Push Changes
-      run: |
-        git config --global user.name "github-actions[bot]"
-        git config --global user.email "41898282+github-actions[bot]@://github.com"
-        git add my-widget.svg
-        git diff-index --quiet HEAD || git commit -m "Automated profile widget update"
-        git push
+            const headers = {
+              Authorization: `Bearer ${process.env.GH_TOKEN}`,
+              Accept: 'application/vnd.github+json'
+            };
+
+            // Fetch repositories
+            const repoRes = await fetch(
+              `https://api.github.com/users/${username}/repos?per_page=100`,
+              { headers }
+            );
+
+            if (!repoRes.ok) {
+              throw new Error(
+                `Failed to fetch repos: ${repoRes.status} ${await repoRes.text()}`
+              );
+            }
+
+            const repos = await repoRes.json();
+
+            const nonForkRepos = repos.filter(repo => !repo.fork);
+            const totalRepos = nonForkRepos.length;
+
+            console.log(`Found ${totalRepos} non-fork repositories.`);
+
+            // Fetch language statistics
+            const langData = {};
+
+            for (const repo of nonForkRepos) {
+              console.log(`Fetching languages for ${repo.name}...`);
+
+              const langRes = await fetch(repo.languages_url, { headers });
+
+              if (!langRes.ok) {
+                console.warn(
+                  `Could not fetch languages for ${repo.name}: ${langRes.status}`
+                );
+                continue;
+              }
+
+              const languages = await langRes.json();
+
+              for (const [lang, bytes] of Object.entries(languages)) {
+                langData[lang] = (langData[lang] || 0) + bytes;
+              }
+            }
+
+            // Get top 6 languages
+            const sortedLangs = Object.entries(langData)
+              .sort((a, b) => b[1] - a[1])
+              .slice(0, 6);
+
+            const totalBytes = sortedLangs.reduce(
+              (sum, [, bytes]) => sum + bytes,
+              0
+            );
+
+            const colors = {
+              JavaScript: '#f1e05a',
+              Python: '#3572A5',
+              TypeScript: '#3178c6',
+              HTML: '#e34c26',
+              CSS: '#563d7c',
+              Go: '#00ADD8',
+              Rust: '#dea584',
+              Java: '#b07219',
+              'C++': '#f34b7d',
+              'C#': '#178600',
+              Ruby: '#701516'
+            };
+
+            const defaultColor = '#858585';
+
+            // Progress bar
+            let currentX = 24;
+            const maxBarWidth = 552;
+            const barSegments = [];
+            const legendItems = [];
+
+            sortedLangs.forEach(([lang, bytes]) => {
+              const pct = totalBytes > 0 ? bytes / totalBytes : 0;
+              const width = Number((maxBarWidth * pct).toFixed(1));
+              const pctString = `${(pct * 100).toFixed(1)}%`;
+              const color = colors[lang] || defaultColor;
+
+              barSegments.push(
+                `<rect x="${currentX}" y="80" width="${width}" height="10" fill="${color}" />`
+              );
+
+              legendItems.push({
+                lang,
+                pctString,
+                color
+              });
+
+              currentX = Number((currentX + width).toFixed(1));
+            });
+
+            // Legend
+            let legendSvg = '';
+
+            legendItems.forEach((item, index) => {
+              const col = index % 3;
+              const row = Math.floor(index / 3);
+
+              const xPos = 24 + col * 186;
+              const yPos = 125 + row * 35;
+
+              legendSvg += `
+              <g transform="translate(${xPos}, ${yPos})">
+                <circle cx="5" cy="-5" r="5" fill="${item.color}"/>
+                <text x="18" y="0" class="lang-text">
+                  ${item.lang}
+                  <tspan class="pct-text">${item.pctString}</tspan>
+                </text>
+              </g>`;
+            });
+
+            // Dark SVG
+            const darkSvg = `<svg xmlns="http://www.w3.org/2000/svg"
+              width="600"
+              height="210"
+              viewBox="0 0 600 210">
+
+              <style>
+                .title {
+                  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+                    Helvetica, Arial, sans-serif;
+                  font-size: 18px;
+                  font-weight: 600;
+                  fill: #c9d1d9;
+                }
+
+                .stat-text {
+                  font-family: ui-monospace, SFMono-Regular, SF Mono,
+                    Menlo, Consolas, monospace;
+                  font-size: 13px;
+                  fill: #8b949e;
+                }
+
+                .lang-text {
+                  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+                    Helvetica, Arial, sans-serif;
+                  font-size: 13px;
+                  font-weight: 500;
+                  fill: #f0f6fc;
+                }
+
+                .pct-text {
+                  font-family: ui-monospace, SFMono-Regular, SF Mono,
+                    Menlo, Consolas, monospace;
+                  font-size: 12px;
+                  fill: #8b949e;
+                }
+              </style>
+
+              <rect
+                width="600"
+                height="210"
+                rx="12"
+                fill="#0d1117"
+                stroke="#30363d"
+                stroke-width="1"
+              />
+
+              <text x="24" y="36" class="title">${username}</text>
+
+              <text x="24" y="58" class="stat-text">
+                @${username} · ${totalRepos} repos
+              </text>
+
+              <g id="progress-bar">
+                ${barSegments.join('\n')}
+              </g>
+
+              ${legendSvg}
+            </svg>`;
+
+            fs.writeFileSync('card-dark.svg', darkSvg);
+
+            console.log('card-dark.svg generated successfully!');
+          }
+
+          run().catch(err => {
+            console.error(err);
+            process.exit(1);
+          });
+          EOF
+
+      - name: Commit and Push Changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add card-dark.svg
+
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "Update dynamic language profile card [skip ci]"
+            git push
+          fi
+
