@@ -1,3 +1,3 @@
 ## Hey everyone!!
 
-![My GitHub Stats](my-widget.svg)
+![My GitHub Stats](card-dark.svg)
