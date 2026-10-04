@@ -101,16 +101,19 @@ def fetch_data():
 
     languages = defaultdict(int)
 
-    for repo in (repos if isinstance(repos, list) else []):
-
-        if not repo.get("fork"):
-
-            langs = github_get(
-                f"/repos/{USERNAME}/{repo['name']}/languages"
-            )
-
-            for lang, count in langs.items():
-                languages[lang] += count
+    repos = repos if isinstance(repos, list) else []
+    
+    # count ALL repositories, including forks :P
+    repo_count = len(repos)
+    
+    for repo in repos:
+    
+        langs = github_get(
+            f"/repos/{USERNAME}/{repo['name']}/languages"
+        )
+    
+        for lang, count in langs.items():
+            languages[lang] += count
 
     # --------------------------------------------------------
     # Contributions
