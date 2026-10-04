@@ -1,6 +1,7 @@
 #code from https://dev.to/iammastercraft/build-your-own-github-profile-widgets-from-scratch-2e3h#11-project-template
-#edited by Dr9nja, 03.10.26
+#edited by Dr9nja, 03.10.26-04.10.26
 import os
+import json
 import requests
 from collections import defaultdict
 from datetime import datetime, timedelta, timezone
@@ -284,17 +285,36 @@ def generate_widget(data):
         )
 
     # --------------------------------------------------------
-    # Colors
+    # colors now works via function!!
     # --------------------------------------------------------
-
+    
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    FILE_PATH = os.path.join(BASE_DIR, "colors.json")
+    
+    try:
+        with open(FILE_PATH, "r", encoding="utf-8") as f:
+            color_data = json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError) as e:
+        print(f"Warning: Could not load {FILE_PATH}: {e}")
+        color_data = {}
+    
+    
+    def get_color(lang_name):
+        return color_data.get(
+            lang_name,
+            {}
+        ).get(
+            "color",
+            "#000000"
+        )
+    
+    
+    # getting color for each language
     colors = [
-        "#242424ff",
-        "#525252ff",
-        "#6a6a6aff",
-        "#797979ff",
-        "#acacacff",
-        "#c2c2c2ff"
+        get_color(language)
+        for language, _ in language_data
     ]
+
 
     # --------------------------------------------------------
     # Progress bar
