@@ -491,7 +491,7 @@ def generate_widget(data):
     y="36"
     class="title"
   >
-    {name}
+    My most used languages 💚🖤
   </text>
 
 
