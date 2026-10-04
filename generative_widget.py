@@ -222,9 +222,20 @@ def fetch_data():
 # Generate SVG
 # ============================================================
 
-def generate_widget(data):
+def generate_widget(data, theme="light"):
 
     width, height = 600, 210
+
+    if theme == "dark":
+        title_color = "#f0f6fc"
+        stat_color = "#8b949e"
+        lang_color = "#f0f6fc"
+        pct_color = "#8b949e"
+    else:
+        title_color = "#1d1d1f"
+        stat_color = "#57606a"
+        lang_color = "#24292f"
+        pct_color = "#57606a"
 
     # --------------------------------------------------------
     # User information
@@ -253,7 +264,7 @@ def generate_widget(data):
     )
 
     # --------------------------------------------------------
-    # Sort languages
+    # Sort languages, now throws away N/A's
     # --------------------------------------------------------
 
     sorted_languages = sorted(
@@ -261,33 +272,28 @@ def generate_widget(data):
         key=lambda item: item[1],
         reverse=True
     )
-
+    
     top_languages = sorted_languages[:6]
-
+    
     total = sum(
         count
         for _, count in top_languages
     )
-
+    
     language_data = []
-
+    
     for language, count in top_languages:
-
+    
         percentage = (
             count / total * 100
             if total
             else 0
         )
-
+    
         language_data.append(
             (language, percentage)
         )
 
-    # Fill remaining slots
-    while len(language_data) < 6:
-        language_data.append(
-            ("N/A", 0)
-        )
 
     # --------------------------------------------------------
     # colors now works via function!!
@@ -431,7 +437,7 @@ def generate_widget(data):
 
       font-size: 18px;
       font-weight: 600;
-      fill: #1d1d1f;
+      fill: {title_color};
     }}
 
     .stat-text {{
@@ -444,7 +450,7 @@ def generate_widget(data):
         monospace;
 
       font-size: 13px;
-      fill: #57606a;
+      fill: {stat_color};
     }}
 
     .lang-text {{
@@ -458,7 +464,7 @@ def generate_widget(data):
 
       font-size: 13px;
       font-weight: 500;
-      fill: #24292f;
+      fill: {lang_color};
     }}
 
     .pct-text {{
@@ -471,23 +477,10 @@ def generate_widget(data):
         monospace;
 
       font-size: 12px;
-      fill: #57606a;
+      fill: {pct_color};
     }}
 
   </style>
-
-
-  <!-- Background Card -->
-
-  <rect
-    width="600"
-    height="210"
-    rx="12"
-    fill="#fefefeff"
-    stroke="#fefefeff"
-    stroke-width="1"
-  />
-
 
   <!-- Header Info -->
 
@@ -540,19 +533,52 @@ if __name__ == "__main__":
 
     data = fetch_data()
 
-    svg = generate_widget(data)
-
-    path = os.path.join(
-        OUTPUT,
-        "my-widget.svg"
+    # --------------------------------------------------------
+    # Generate light theme SVG
+    # --------------------------------------------------------
+    
+    light_svg = generate_widget(
+        data,
+        theme="light"
     )
-
+    
+    light_path = os.path.join(
+        OUTPUT,
+        "my-widget-light.svg"
+    )
+    
     with open(
-        path,
+        light_path,
         "w",
         encoding="utf-8"
     ) as f:
+    
+        f.write(light_svg)
+    
+    print(f"Generated {light_path}")
+    
+    
+    # --------------------------------------------------------
+    # Generate dark theme SVG
+    # --------------------------------------------------------
+    
+    dark_svg = generate_widget(
+        data,
+        theme="dark"
+    )
+    
+    dark_path = os.path.join(
+        OUTPUT,
+        "my-widget-dark.svg"
+    )
+    
+    with open(
+        dark_path,
+        "w",
+        encoding="utf-8"
+    ) as f:
+    
+        f.write(dark_svg)
+    
+    print(f"Generated {dark_path}")
 
-        f.write(svg)
-
-    print(f"Generated {path}")
