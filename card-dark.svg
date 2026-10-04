@@ -51,11 +51,11 @@
     </text>
 
     <g id="progress-bar">
-      <rect x="24" y="80" width="214" height="10" fill="#f1e05a" />
-<rect x="238" y="80" width="131.5" height="10" fill="#3572A5" />
-<rect x="369.5" y="80" width="117.4" height="10" fill="#178600" />
-<rect x="486.9" y="80" width="65.1" height="10" fill="#563d7c" />
-<rect x="552" y="80" width="24.1" height="10" fill="#e34c26" />
+      <rect x="24" y="80" width="213.9" height="10" fill="#f1e05a" />
+<rect x="237.9" y="80" width="131.8" height="10" fill="#3572A5" />
+<rect x="369.7" y="80" width="117.3" height="10" fill="#178600" />
+<rect x="487" y="80" width="65" height="10" fill="#563d7c" />
+<rect x="552" y="80" width="24" height="10" fill="#e34c26" />
     </g>
 
     
@@ -63,21 +63,21 @@
       <circle cx="5" cy="-5" r="5" fill="#f1e05a"/>
       <text x="18" y="0" class="lang-text">
         JavaScript
-        <tspan class="pct-text">38.8%</tspan>
+        <tspan class="pct-text">38.7%</tspan>
       </text>
     </g>
     <g transform="translate(210, 125)">
       <circle cx="5" cy="-5" r="5" fill="#3572A5"/>
       <text x="18" y="0" class="lang-text">
         Python
-        <tspan class="pct-text">23.8%</tspan>
+        <tspan class="pct-text">23.9%</tspan>
       </text>
     </g>
     <g transform="translate(396, 125)">
       <circle cx="5" cy="-5" r="5" fill="#178600"/>
       <text x="18" y="0" class="lang-text">
         C#
-        <tspan class="pct-text">21.3%</tspan>
+        <tspan class="pct-text">21.2%</tspan>
       </text>
     </g>
     <g transform="translate(24, 160)">
