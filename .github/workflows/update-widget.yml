@@ -36,13 +36,17 @@ jobs:
 
       - name: Commit and Push Changes
         run: |
-          mkdir -p dist #is dist exists?
         
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          git add dist/my-widget-light.svg dist/my-widget-dark.svg
+          git add my-widget-light.svg my-widget-dark.svg
 
+          mkdir -p dist #check yet again :P
+
+          mv my-widget-light.svg dist/
+          mv my-widget-dark.svg dist/
+          
           if git diff --cached --quiet; then
             echo "No changes to commit."
           else
