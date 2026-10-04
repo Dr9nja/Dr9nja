@@ -459,7 +459,7 @@ def generate_widget(data):
     height="210"
     rx="12"
     fill="#fefefeff"
-    stroke="#e8e8ed"
+    stroke="#fefefeff"
     stroke-width="1"
   />
 
