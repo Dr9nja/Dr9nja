@@ -52,10 +52,10 @@
 
     <g id="progress-bar">
       <rect x="24" y="80" width="216.7" height="10" fill="#f1e05a" />
-<rect x="240.7" y="80" width="126.1" height="10" fill="#3572A5" />
-<rect x="366.8" y="80" width="118.9" height="10" fill="#178600" />
-<rect x="485.7" y="80" width="65.9" height="10" fill="#563d7c" />
-<rect x="551.6" y="80" width="24.4" height="10" fill="#e34c26" />
+<rect x="240.7" y="80" width="126.2" height="10" fill="#3572A5" />
+<rect x="366.9" y="80" width="118.9" height="10" fill="#178600" />
+<rect x="485.8" y="80" width="65.9" height="10" fill="#563d7c" />
+<rect x="551.7" y="80" width="24.4" height="10" fill="#e34c26" />
     </g>
 
     
