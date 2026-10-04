@@ -1,5 +1,7 @@
 #code from https://dev.to/iammastercraft/build-your-own-github-profile-widgets-from-scratch-2e3h#11-project-template
 #edited by Dr9nja, 03.10.26-04.10.26
+print("Version: 04.10.2026")
+
 import os
 import json
 import requests
