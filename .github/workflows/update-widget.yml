@@ -31,7 +31,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_USERNAME: ${{ github.repository_owner }}
           OUTPUT_DIR: .
-          TARGET_DIR: "../dist"
+          TARGET_DIR: "dist"
         run: |
           python core/generative_widget.py #file moved to the core folder
 
