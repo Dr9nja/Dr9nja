@@ -80,7 +80,7 @@
     y="58"
     class="stat-text"
   >
-    @Dr9nja · 4 repos · 80 commits · 6 streak in days
+    @Dr9nja · 4 repos · 87 commits · 6 streak in days
   </text>
 
 
@@ -92,35 +92,35 @@
     <rect
       x="24.00"
       y="80"
-      width="225.30"
+      width="228.39"
       height="10"
       fill="#3572A5"
     />
     <rect
-      x="249.30"
+      x="252.39"
       y="80"
-      width="186.28"
+      width="184.51"
       height="10"
       fill="#7355dd"
     />
     <rect
-      x="435.57"
+      x="436.90"
       y="80"
-      width="92.82"
+      width="91.94"
       height="10"
       fill="#f1e05a"
     />
     <rect
-      x="528.40"
+      x="528.85"
       y="80"
-      width="26.03"
+      width="25.79"
       height="10"
       fill="#663399"
     />
     <rect
-      x="554.43"
+      x="554.63"
       y="80"
-      width="21.57"
+      width="21.37"
       height="10"
       fill="#e34c26"
     />
@@ -146,7 +146,7 @@
     >
       Python
       <tspan class="pct-text">
-        40.8%
+        41.4%
       </tspan>
     </text>
   </g>
@@ -166,7 +166,7 @@
     >
       C#
       <tspan class="pct-text">
-        33.7%
+        33.4%
       </tspan>
     </text>
   </g>
@@ -186,7 +186,7 @@
     >
       JavaScript
       <tspan class="pct-text">
-        16.8%
+        16.7%
       </tspan>
     </text>
   </g>
