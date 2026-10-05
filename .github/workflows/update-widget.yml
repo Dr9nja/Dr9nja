@@ -41,7 +41,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          git add my-widget-light.svg my-widget-dark.svg
+          git add dist/my-widget-light.svg dist/my-widget-dark.svg
 
           #mkdir -p dist #check yet again :P
 
