@@ -8,6 +8,8 @@ import requests
 from collections import defaultdict
 from datetime import datetime, timedelta, timezone
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
 USERNAME = os.environ.get("GITHUB_USERNAME", "Dr9nja")
 TOKEN = os.environ.get("GITHUB_TOKEN", "")
 OUTPUT = os.environ.get("OUTPUT_DIR", ".")
