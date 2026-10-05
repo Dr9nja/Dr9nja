@@ -32,7 +32,7 @@ jobs:
           GITHUB_USERNAME: ${{ github.repository_owner }}
           OUTPUT_DIR: .
         run: |
-          python generative_widget.py
+          python core/generative_widget.py #file moved to the core folder
 
       - name: Commit and Push Changes
         run: |
@@ -42,15 +42,15 @@ jobs:
 
           git add my-widget-light.svg my-widget-dark.svg
 
-          mkdir -p dist #check yet again :P
+          #mkdir -p dist #check yet again :P
 
-          mv my-widget-light.svg dist/
-          mv my-widget-dark.svg dist/
+          #mv my-widget-light.svg dist/
+          #mv my-widget-dark.svg dist/
           
           if git diff --cached --quiet; then
             echo "No changes to commit."
           else
-            git commit -m "Update dynamic language profile card [skip ci]"
+            git commit -m "Widget auto-update"
             git push
           fi
 
