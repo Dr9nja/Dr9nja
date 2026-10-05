@@ -11,6 +11,7 @@ from datetime import datetime, timedelta, timezone
 USERNAME = os.environ.get("GITHUB_USERNAME", "Dr9nja")
 TOKEN = os.environ.get("GITHUB_TOKEN", "")
 OUTPUT = os.environ.get("OUTPUT_DIR", ".")
+TARGET_DIR = os.environ.get("TARGET_DIR", "../dist")
 
 
 # ============================================================
