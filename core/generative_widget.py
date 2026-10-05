@@ -301,6 +301,7 @@ def generate_widget(data, theme="light"):
     
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
     FILE_PATH = os.path.join(BASE_DIR, "colors.json")
+    TARGET_DIR = os.path.abspath(os.path.join(BASE_DIR, '..', 'dist')) # target folder, since the svgs are saved in dist!
     
     try:
         with open(FILE_PATH, "r", encoding="utf-8") as f:
@@ -543,7 +544,7 @@ if __name__ == "__main__":
     )
     
     light_path = os.path.join(
-        OUTPUT,
+        TARGET_DIR,
         "my-widget-light.svg"
     )
     
@@ -568,7 +569,7 @@ if __name__ == "__main__":
     )
     
     dark_path = os.path.join(
-        OUTPUT,
+        TARGET_DIR,
         "my-widget-dark.svg"
     )
     
