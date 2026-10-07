@@ -30,5 +30,6 @@ jobs:
         with:
           message: 'Update GitHub Snake'
           add: 'dist'
+          pull: '--rebase --autostash'
 
 
