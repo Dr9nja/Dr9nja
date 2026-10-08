@@ -80,7 +80,7 @@
     y="58"
     class="stat-text"
   >
-    @Dr9nja · 6 repos · 145 commits · 9 streak in days
+    @Dr9nja · 6 repos · 158 commits · 9 streak in days
   </text>
 
 
@@ -92,42 +92,42 @@
     <rect
       x="24.00"
       y="80"
-      width="248.96"
+      width="189.70"
       height="10"
       fill="#7355dd"
     />
     <rect
-      x="272.96"
+      x="213.70"
       y="80"
-      width="98.99"
-      height="10"
-      fill="#e34c26"
-    />
-    <rect
-      x="371.95"
-      y="80"
-      width="85.69"
-      height="10"
-      fill="#3572A5"
-    />
-    <rect
-      x="457.65"
-      y="80"
-      width="47.82"
+      width="163.58"
       height="10"
       fill="#3178c6"
     />
     <rect
-      x="505.46"
+      x="377.28"
       y="80"
-      width="36.04"
+      width="75.43"
+      height="10"
+      fill="#e34c26"
+    />
+    <rect
+      x="452.71"
+      y="80"
+      width="65.29"
+      height="10"
+      fill="#3572A5"
+    />
+    <rect
+      x="518.01"
+      y="80"
+      width="31.71"
       height="10"
       fill="#663399"
     />
     <rect
-      x="541.50"
+      x="549.71"
       y="80"
-      width="34.50"
+      width="26.29"
       height="10"
       fill="#f1e05a"
     />
@@ -153,52 +153,12 @@
     >
       C#
       <tspan class="pct-text">
-        45.1%
+        34.4%
       </tspan>
     </text>
   </g>
 
   <g transform="translate(210, 125)">
-    <circle
-      cx="5"
-      cy="-5"
-      r="5"
-      fill="#e34c26"
-    />
-
-    <text
-      x="18"
-      y="0"
-      class="lang-text"
-    >
-      HTML
-      <tspan class="pct-text">
-        17.9%
-      </tspan>
-    </text>
-  </g>
-
-  <g transform="translate(390, 125)">
-    <circle
-      cx="5"
-      cy="-5"
-      r="5"
-      fill="#3572A5"
-    />
-
-    <text
-      x="18"
-      y="0"
-      class="lang-text"
-    >
-      Python
-      <tspan class="pct-text">
-        15.5%
-      </tspan>
-    </text>
-  </g>
-
-  <g transform="translate(24, 160)">
     <circle
       cx="5"
       cy="-5"
@@ -213,7 +173,47 @@
     >
       TypeScript
       <tspan class="pct-text">
-        8.7%
+        29.6%
+      </tspan>
+    </text>
+  </g>
+
+  <g transform="translate(390, 125)">
+    <circle
+      cx="5"
+      cy="-5"
+      r="5"
+      fill="#e34c26"
+    />
+
+    <text
+      x="18"
+      y="0"
+      class="lang-text"
+    >
+      HTML
+      <tspan class="pct-text">
+        13.7%
+      </tspan>
+    </text>
+  </g>
+
+  <g transform="translate(24, 160)">
+    <circle
+      cx="5"
+      cy="-5"
+      r="5"
+      fill="#3572A5"
+    />
+
+    <text
+      x="18"
+      y="0"
+      class="lang-text"
+    >
+      Python
+      <tspan class="pct-text">
+        11.8%
       </tspan>
     </text>
   </g>
@@ -233,7 +233,7 @@
     >
       CSS
       <tspan class="pct-text">
-        6.5%
+        5.7%
       </tspan>
     </text>
   </g>
@@ -253,7 +253,7 @@
     >
       JavaScript
       <tspan class="pct-text">
-        6.2%
+        4.8%
       </tspan>
     </text>
   </g>
