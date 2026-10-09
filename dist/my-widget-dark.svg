@@ -80,7 +80,7 @@
     y="58"
     class="stat-text"
   >
-    @Dr9nja · 6 repos · 163 commits · 10 streak in days
+    @Dr9nja · 6 repos · 164 commits · 10 streak in days
   </text>
 
 
@@ -92,42 +92,42 @@
     <rect
       x="24.00"
       y="80"
-      width="252.24"
+      width="287.34"
       height="10"
       fill="#7355dd"
     />
     <rect
-      x="276.24"
+      x="311.34"
       y="80"
-      width="135.35"
+      width="119.49"
       height="10"
       fill="#3178c6"
     />
     <rect
-      x="411.58"
+      x="430.84"
       y="80"
-      width="62.41"
+      width="55.10"
       height="10"
       fill="#e34c26"
     />
     <rect
-      x="473.99"
+      x="485.94"
       y="80"
-      width="54.02"
+      width="47.70"
       height="10"
       fill="#3572A5"
     />
     <rect
-      x="528.02"
+      x="533.64"
       y="80"
-      width="26.24"
+      width="23.16"
       height="10"
       fill="#663399"
     />
     <rect
-      x="554.25"
+      x="556.80"
       y="80"
-      width="21.75"
+      width="19.20"
       height="10"
       fill="#f1e05a"
     />
@@ -153,7 +153,7 @@
     >
       C#
       <tspan class="pct-text">
-        45.7%
+        52.1%
       </tspan>
     </text>
   </g>
@@ -173,7 +173,7 @@
     >
       TypeScript
       <tspan class="pct-text">
-        24.5%
+        21.6%
       </tspan>
     </text>
   </g>
@@ -193,7 +193,7 @@
     >
       HTML
       <tspan class="pct-text">
-        11.3%
+        10.0%
       </tspan>
     </text>
   </g>
@@ -213,7 +213,7 @@
     >
       Python
       <tspan class="pct-text">
-        9.8%
+        8.6%
       </tspan>
     </text>
   </g>
@@ -233,7 +233,7 @@
     >
       CSS
       <tspan class="pct-text">
-        4.8%
+        4.2%
       </tspan>
     </text>
   </g>
@@ -253,7 +253,7 @@
     >
       JavaScript
       <tspan class="pct-text">
-        3.9%
+        3.5%
       </tspan>
     </text>
   </g>
