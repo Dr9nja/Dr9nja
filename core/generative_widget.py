@@ -279,7 +279,7 @@ def generate_widget(data, theme="light"):
         reverse=True
     )
     
-    top_languages = sorted_languages[:6]
+    top_languages = sorted_languages[:9]
     
     total = sum(
         count
