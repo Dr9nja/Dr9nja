@@ -1,6 +1,6 @@
 #code from https://dev.to/iammastercraft/build-your-own-github-profile-widgets-from-scratch-2e3h#11-project-template
-#edited by Dr9nja, 03.10.26-04.10.26
-print("Version: 04.10.2026")
+#edited by Dr9nja, 03.10.26-14.10.26
+print("Version: 14.10.2026")
 
 import os
 import json
@@ -380,7 +380,10 @@ def generate_widget(data, theme="light"):
         (390, 125),
         (24, 160),
         (210, 160),
-        (390, 160)
+        (390, 160),
+        (24, 195),
+        (210, 195),
+        (390, 195)
     ]
 
     legend = []
