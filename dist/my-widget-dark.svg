@@ -80,7 +80,7 @@
     y="58"
     class="stat-text"
   >
-    @Dr9nja · 7 repos · 193 commits · 14 streak in days
+    @Dr9nja · 7 repos · 194 commits · 14 streak in days
   </text>
 
 
@@ -92,35 +92,35 @@
     <rect
       x="24.00"
       y="80"
-      width="286.16"
+      width="286.04"
       height="10"
       fill="#7355dd"
     />
     <rect
-      x="310.16"
+      x="310.04"
       y="80"
-      width="119.00"
+      width="118.95"
       height="10"
       fill="#3178c6"
     />
     <rect
-      x="429.16"
+      x="429.00"
       y="80"
-      width="56.27"
+      width="56.25"
       height="10"
       fill="#e34c26"
     />
     <rect
-      x="485.43"
+      x="485.25"
       y="80"
-      width="47.50"
+      width="47.70"
       height="10"
       fill="#3572A5"
     />
     <rect
-      x="532.93"
+      x="532.95"
       y="80"
-      width="23.07"
+      width="23.06"
       height="10"
       fill="#663399"
     />
@@ -173,7 +173,7 @@
     >
       TypeScript
       <tspan class="pct-text">
-        21.6%
+        21.5%
       </tspan>
     </text>
   </g>
