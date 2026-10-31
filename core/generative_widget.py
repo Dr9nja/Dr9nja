@@ -10,6 +10,7 @@ from datetime import datetime, timedelta, timezone
 import random
 from urllib.parse import quote
 import html
+import base64
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -366,17 +367,33 @@ def generate_widget(data, theme="light"):
         f"?fontSize=65&fontColor=white&random={random.randint(1, 999999999)}"
     )
     
-    cat_image = f'''
-    <image
-        x="600"
-        y="65"
-        width="280"
-        height="210"
-        href="{html.escape(cat_url, quote=True)}"
-        preserveAspectRatio="xMidYMid slice"
-    />
-    '''
+    # Download cat image
+    try:
+        response = requests.get(cat_url, timeout=30)
+        response.raise_for_status()
+    
+        image_base64 = base64.b64encode(
+            response.content
+        ).decode("utf-8")
+    
+        image_type = response.headers.get(
+            "Content-Type", "image/jpeg"
+        )
+    
+        cat_image = f'''
+        <image
+            x="600"
+            y="65"
+            width="280"
+            height="210"
+            href="data:{image_type};base64,{image_base64}"
+            preserveAspectRatio="xMidYMid slice"
+        />
+        '''
 
+    except requests.RequestException as e:
+        print(f"Could not fetch cat image: {e}")
+        cat_image = ""
 
     # --------------------------------------------------------
     # Progress bar
@@ -565,7 +582,6 @@ def generate_widget(data, theme="light"):
   {''.join(legend)}
 
   <!-- Cat of the Hour -->
-
   <text
     x="600"
     y="40"
@@ -573,7 +589,7 @@ def generate_widget(data, theme="light"):
   >
     Cat of the hour!
   </text>
-
+    
   {cat_image}
 
 
