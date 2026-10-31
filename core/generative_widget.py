@@ -7,6 +7,9 @@ import json
 import requests
 from collections import defaultdict
 from datetime import datetime, timedelta, timezone
+import random
+from urllib.parse import quote
+import html
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
