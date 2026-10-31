@@ -230,7 +230,7 @@ def fetch_data():
 
 def generate_widget(data, theme="light"):
 
-    width, height = 600, 210
+    width, height = 900, 290
 
     if theme == "dark":
         title_color = "#f0f6fc"
@@ -332,6 +332,47 @@ def generate_widget(data, theme="light"):
         get_color(language)
         for language, _ in language_data
     ]
+
+    # --------------------------------------------------------
+    FILE_PATH = os.path.join(BASE_DIR, "cat-api_words.json")
+
+    try:
+        with open(FILE_PATH, "r", encoding="utf-8") as f:
+            word_data = json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError) as e:
+        print(f"Warning: Could not load {FILE_PATH}: {e}")
+        word_data = {"Words": []}
+    
+    
+    def get_word():
+        words = word_data.get("Words", [])
+    
+        if not words:
+            return "Cat"
+    
+        return random.choice(words)
+
+    # --------------------------------------------------------
+    # Random cat word + Cataas image
+    # --------------------------------------------------------
+    
+    random_text = get_word()
+    
+    cat_url = (
+        f"https://cataas.com/cat/says/{quote(random_text)}"
+        f"?fontSize=65&fontColor=white&random={random.randint(1, 999999999)}"
+    )
+    
+    cat_image = f'''
+    <image
+        x="600"
+        y="65"
+        width="280"
+        height="210"
+        href="{html.escape(cat_url, quote=True)}"
+        preserveAspectRatio="xMidYMid slice"
+    />
+    '''
 
 
     # --------------------------------------------------------
@@ -502,7 +543,6 @@ def generate_widget(data, theme="light"):
     My most used languages 💚🖤
   </text>
 
-
   <text
     x="24"
     y="58"
@@ -510,6 +550,28 @@ def generate_widget(data, theme="light"):
   >
     @{USERNAME} · {repos} repos · {commits} commits · {streak} streak in days
   </text>
+
+  <!-- Multi-Color Progress Bar -->
+
+  <g id="progress-bar">
+    {''.join(progress_bar)}
+  </g>
+
+  <!-- Legend -->
+
+  {''.join(legend)}
+
+  <!-- Cat of the Hour -->
+
+  <text
+    x="600"
+    y="40"
+    class="title"
+  >
+    Cat of the hour!
+  </text>
+
+  {cat_image}
 
 
   <!-- Multi-Color Progress Bar -->
