@@ -22,7 +22,7 @@ TARGET_DIR = os.environ.get(
     "TARGET_DIR",
     os.path.abspath(os.path.join(BASE_DIR, "..", "dist"))
 )
-PLACEHOLDERS_DIR = os.path.join(TARGET_DIR, "placeholders")
+PLACEHOLDERS_DIR = os.path.join(TARGET_DIR, "placeholder")
 
 
 # ============================================================
