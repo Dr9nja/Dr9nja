@@ -355,7 +355,7 @@ def generate_widget(data, theme="light"):
     random_text = get_word()
 
     cat_url = (
-        f"hhttps://cataas.com/cat/says/{quote(random_text)}"
+        f"https://cataas.com/cat/says/{quote(random_text)}"
         f"?fontSize=65&fontColor=white&random={random.randint(1, 999999999)}"
     )
 
