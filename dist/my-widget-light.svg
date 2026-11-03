@@ -79,7 +79,7 @@
     y="58"
     class="stat-text"
   >
-    @Dr9nja · 10 repos · 324 commits · 35 streak in days
+    @Dr9nja · 10 repos · 331 commits · 35 streak in days
   </text>
 
   <!-- Multi-Color Progress Bar -->
@@ -89,63 +89,63 @@
     <rect
       x="24.00"
       y="80"
-      width="278.18"
+      width="277.19"
       height="10"
       fill="#7355dd"
     />
     <rect
-      x="302.18"
+      x="301.19"
       y="80"
-      width="76.79"
+      width="76.52"
       height="10"
       fill="#3178c6"
     />
     <rect
-      x="378.97"
+      x="377.71"
       y="80"
-      width="47.95"
+      width="47.78"
       height="10"
       fill="#e34c26"
     />
     <rect
-      x="426.93"
+      x="425.49"
       y="80"
-      width="46.50"
+      width="46.33"
       height="10"
       fill="#f1e05a"
     />
     <rect
-      x="473.42"
+      x="471.82"
       y="80"
-      width="42.32"
+      width="42.17"
       height="10"
       fill="#663399"
     />
     <rect
-      x="515.75"
+      x="513.99"
       y="80"
-      width="35.52"
+      width="37.36"
       height="10"
       fill="#3572A5"
     />
     <rect
-      x="551.27"
+      x="551.36"
       y="80"
-      width="10.63"
+      width="10.59"
       height="10"
       fill="#101F1F"
     />
     <rect
-      x="561.90"
+      x="561.95"
       y="80"
-      width="7.10"
+      width="7.07"
       height="10"
       fill="#41b883"
     />
     <rect
-      x="568.99"
+      x="569.02"
       y="80"
-      width="7.01"
+      width="6.98"
       height="10"
       fill="#c6538c"
     />
@@ -169,7 +169,7 @@
     >
       C#
       <tspan class="pct-text">
-        50.4%
+        50.2%
       </tspan>
     </text>
   </g>
@@ -249,7 +249,7 @@
     >
       CSS
       <tspan class="pct-text">
-        7.7%
+        7.6%
       </tspan>
     </text>
   </g>
@@ -269,7 +269,7 @@
     >
       Python
       <tspan class="pct-text">
-        6.4%
+        6.8%
       </tspan>
     </text>
   </g>
@@ -336,6 +336,7 @@
 
 
   <!-- Cat of the Hour -->
+
   <text
     x="600"
     y="40"
@@ -343,265 +344,7 @@
   >
     Cat of the hour!
   </text>
-    
-  
-
-
-  <!-- Multi-Color Progress Bar -->
-
-  <g id="progress-bar">
-
-    
-    <rect
-      x="24.00"
-      y="80"
-      width="278.18"
-      height="10"
-      fill="#7355dd"
-    />
-    <rect
-      x="302.18"
-      y="80"
-      width="76.79"
-      height="10"
-      fill="#3178c6"
-    />
-    <rect
-      x="378.97"
-      y="80"
-      width="47.95"
-      height="10"
-      fill="#e34c26"
-    />
-    <rect
-      x="426.93"
-      y="80"
-      width="46.50"
-      height="10"
-      fill="#f1e05a"
-    />
-    <rect
-      x="473.42"
-      y="80"
-      width="42.32"
-      height="10"
-      fill="#663399"
-    />
-    <rect
-      x="515.75"
-      y="80"
-      width="35.52"
-      height="10"
-      fill="#3572A5"
-    />
-    <rect
-      x="551.27"
-      y="80"
-      width="10.63"
-      height="10"
-      fill="#101F1F"
-    />
-    <rect
-      x="561.90"
-      y="80"
-      width="7.10"
-      height="10"
-      fill="#41b883"
-    />
-    <rect
-      x="568.99"
-      y="80"
-      width="7.01"
-      height="10"
-      fill="#c6538c"
-    />
-
-  </g>
-
-
-  <!-- Legend -->
 
   
-  <g transform="translate(24, 125)">
-    <circle
-      cx="5"
-      cy="-5"
-      r="5"
-      fill="#7355dd"
-    />
-
-    <text
-      x="18"
-      y="0"
-      class="lang-text"
-    >
-      C#
-      <tspan class="pct-text">
-        50.4%
-      </tspan>
-    </text>
-  </g>
-
-  <g transform="translate(210, 125)">
-    <circle
-      cx="5"
-      cy="-5"
-      r="5"
-      fill="#3178c6"
-    />
-
-    <text
-      x="18"
-      y="0"
-      class="lang-text"
-    >
-      TypeScript
-      <tspan class="pct-text">
-        13.9%
-      </tspan>
-    </text>
-  </g>
-
-  <g transform="translate(390, 125)">
-    <circle
-      cx="5"
-      cy="-5"
-      r="5"
-      fill="#e34c26"
-    />
-
-    <text
-      x="18"
-      y="0"
-      class="lang-text"
-    >
-      HTML
-      <tspan class="pct-text">
-        8.7%
-      </tspan>
-    </text>
-  </g>
-
-  <g transform="translate(24, 160)">
-    <circle
-      cx="5"
-      cy="-5"
-      r="5"
-      fill="#f1e05a"
-    />
-
-    <text
-      x="18"
-      y="0"
-      class="lang-text"
-    >
-      JavaScript
-      <tspan class="pct-text">
-        8.4%
-      </tspan>
-    </text>
-  </g>
-
-  <g transform="translate(210, 160)">
-    <circle
-      cx="5"
-      cy="-5"
-      r="5"
-      fill="#663399"
-    />
-
-    <text
-      x="18"
-      y="0"
-      class="lang-text"
-    >
-      CSS
-      <tspan class="pct-text">
-        7.7%
-      </tspan>
-    </text>
-  </g>
-
-  <g transform="translate(390, 160)">
-    <circle
-      cx="5"
-      cy="-5"
-      r="5"
-      fill="#3572A5"
-    />
-
-    <text
-      x="18"
-      y="0"
-      class="lang-text"
-    >
-      Python
-      <tspan class="pct-text">
-        6.4%
-      </tspan>
-    </text>
-  </g>
-
-  <g transform="translate(24, 195)">
-    <circle
-      cx="5"
-      cy="-5"
-      r="5"
-      fill="#101F1F"
-    />
-
-    <text
-      x="18"
-      y="0"
-      class="lang-text"
-    >
-      AppleScript
-      <tspan class="pct-text">
-        1.9%
-      </tspan>
-    </text>
-  </g>
-
-  <g transform="translate(210, 195)">
-    <circle
-      cx="5"
-      cy="-5"
-      r="5"
-      fill="#41b883"
-    />
-
-    <text
-      x="18"
-      y="0"
-      class="lang-text"
-    >
-      Vue
-      <tspan class="pct-text">
-        1.3%
-      </tspan>
-    </text>
-  </g>
-
-  <g transform="translate(390, 195)">
-    <circle
-      cx="5"
-      cy="-5"
-      r="5"
-      fill="#c6538c"
-    />
-
-    <text
-      x="18"
-      y="0"
-      class="lang-text"
-    >
-      SCSS
-      <tspan class="pct-text">
-        1.3%
-      </tspan>
-    </text>
-  </g>
-
-
 
 </svg>
