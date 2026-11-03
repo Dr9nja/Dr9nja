@@ -122,7 +122,7 @@
       fill="#663399"
     />
     <rect
-      x="513.99"
+      x="514.00"
       y="80"
       width="37.36"
       height="10"
@@ -346,5 +346,14 @@
   </text>
 
   
+  <image
+    x="600"
+    y="65"
+    width="280"
+    height="210"
+    href="data:image/jpeg;base64,DQo="
+    preserveAspectRatio="xMidYMid slice"
+  />
+
 
 </svg>
