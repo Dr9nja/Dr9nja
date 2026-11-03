@@ -1,6 +1,6 @@
 #code from https://dev.to/iammastercraft/build-your-own-github-profile-widgets-from-scratch-2e3h#11-project-template
 #edited by Dr9nja, 03.10.26-14.10.26
-print("Version: 14.10.2026")
+print("Version: 03.11.2026")
 
 import os
 import json
@@ -11,6 +11,7 @@ import random
 from urllib.parse import quote
 import html
 import base64
+import mimetypes
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -21,6 +22,7 @@ TARGET_DIR = os.environ.get(
     "TARGET_DIR",
     os.path.abspath(os.path.join(BASE_DIR, "..", "dist"))
 )
+PLACEHOLDERS_DIR = os.path.join(TARGET_DIR, "placeholders")
 
 
 # ============================================================
@@ -112,16 +114,16 @@ def fetch_data():
     languages = defaultdict(int)
 
     repos = repos if isinstance(repos, list) else []
-    
+
     # count ALL repositories, including forks :P
     repo_count = len(repos)
-    
+
     for repo in repos:
-    
+
         langs = github_get(
             f"/repos/{USERNAME}/{repo['name']}/languages"
         )
-    
+
         for lang, count in langs.items():
             languages[lang] += count
 
@@ -274,7 +276,7 @@ def generate_widget(data, theme="light"):
     )
 
     # --------------------------------------------------------
-    # Sort languages, now throws away N/A's
+    # Sort languages
     # --------------------------------------------------------
 
     sorted_languages = sorted(
@@ -282,159 +284,146 @@ def generate_widget(data, theme="light"):
         key=lambda item: item[1],
         reverse=True
     )
-    
+
     top_languages = sorted_languages[:9]
-    
+
     total = sum(
         count
         for _, count in top_languages
     )
-    
+
     language_data = []
-    
+
     for language, count in top_languages:
-    
+
         percentage = (
             count / total * 100
             if total
             else 0
         )
-    
+
         language_data.append(
             (language, percentage)
         )
 
+    # --------------------------------------------------------
+    # Language colors from colors.json
+    # --------------------------------------------------------
 
-    # --------------------------------------------------------
-    # colors now works via function!!
-    # --------------------------------------------------------
-    
-    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-    FILE_PATH = os.path.join(BASE_DIR, "colors.json")
-    TARGET_DIR = os.path.abspath(os.path.join(BASE_DIR, '..', 'dist')) # target folder, since the svgs are saved in dist!
-    PLACEHOLDERS_DIR = os.path.join(BASE_DIR, "../dist/placeholders")
-    
+    colors_path = os.path.join(BASE_DIR, "colors.json")
+
     try:
-        with open(FILE_PATH, "r", encoding="utf-8") as f:
+        with open(colors_path, "r", encoding="utf-8") as f:
             color_data = json.load(f)
     except (FileNotFoundError, json.JSONDecodeError) as e:
-        print(f"Warning: Could not load {FILE_PATH}: {e}")
+        print(f"Warning: Could not load {colors_path}: {e}")
         color_data = {}
-    
-    
+
     def get_color(lang_name):
-        return color_data.get(
-            lang_name,
-            {}
-        ).get(
-            "color",
-            "#000000"
-        )
-    
-    
-    # getting color for each language
+        return (color_data.get(lang_name) or {}).get("color") or "#000000"
+
     colors = [
         get_color(language)
         for language, _ in language_data
     ]
 
     # --------------------------------------------------------
-    FILE_PATH = os.path.join(BASE_DIR, "cat-api_words.json")
+    # Random cat word
+    # --------------------------------------------------------
+
+    words_path = os.path.join(BASE_DIR, "cat-api_words.json")
 
     try:
-        with open(FILE_PATH, "r", encoding="utf-8") as f:
+        with open(words_path, "r", encoding="utf-8") as f:
             word_data = json.load(f)
     except (FileNotFoundError, json.JSONDecodeError) as e:
-        print(f"Warning: Could not load {FILE_PATH}: {e}")
+        print(f"Warning: Could not load {words_path}: {e}")
         word_data = {"Words": []}
-    
-    
+
     def get_word():
         words = word_data.get("Words", [])
-    
+
         if not words:
             return "Cat"
-    
+
         return random.choice(words)
 
     # --------------------------------------------------------
-    # Random cat word + Cataas image
+    # Cataas image (with local placeholder fallback)
     # --------------------------------------------------------
-    
+
     random_text = get_word()
-    
+
     cat_url = (
         f"https://cataas.com/cat/says/{quote(random_text)}"
-        f"?fonttSize=65&fontColor=white&random={random.randint(1, 999999999)}"
+        f"?fontSize=65&fontColor=white&random={random.randint(1, 999999999)}"
     )
-    failed_to_load = false
-    
-    # Download cat image
+
+    cat_image = ""
+    image_base64 = None
+    image_type = "image/jpeg"
+    failed_to_load = False
+
+    # Try the online cat first
     try:
         response = requests.get(cat_url, timeout=30)
         response.raise_for_status()
-    
+
         image_base64 = base64.b64encode(
             response.content
         ).decode("utf-8")
-    
+
         image_type = response.headers.get(
             "Content-Type", "image/jpeg"
         )
-    
-        cat_image = f'''
-        <image
-            x="600"
-            y="65"
-            width="280"
-            height="210"
-            href="data:{image_type};base64,{image_base64}"
-            preserveAspectRatio="xMidYMid slice"
-        />
-        '''
 
     except requests.RequestException as e:
         print(f"Could not fetch cat image: {e}")
-        cat_image = ""
-        failed_to_load = true
+        failed_to_load = True
 
-    try:
-    # Get a list of all files in the placeholders directory
-    if os.path.exists(PLACEHOLDERS_DIR):
-        local_images = [f for f in os.listdir(PLACEHOLDERS_DIR) if os.path.isfile(os.path.join(PLACEHOLDERS_DIR, f))]
-    else:
-        local_images = []
+    # Fall back to a local placeholder ONLY if the download failed
+    if failed_to_load:
+        try:
+            if os.path.isdir(PLACEHOLDERS_DIR):
+                local_images = [
+                    f for f in os.listdir(PLACEHOLDERS_DIR)
+                    if os.path.isfile(os.path.join(PLACEHOLDERS_DIR, f))
+                ]
+            else:
+                local_images = []
 
-    if local_images and failed_to_load:
-        # Pick a random image
-        random_image_name = random.choice(local_images)
-        image_path = os.path.join(PLACEHOLDERS_DIR, random_image_name)
-        
-        # Determine the image type based on file extension
-        ext = os.path.splitext(random_image_name)[1].lower()
-        image_type = f"image/{ext.replace('.', '')}" if ext else "image/jpeg"
+            if local_images:
+                random_image_name = random.choice(local_images)
+                image_path = os.path.join(PLACEHOLDERS_DIR, random_image_name)
 
-        # Read and encode the image
-        with open(image_path, "rb") as img_file:
-            image_base64 = base64.b64encode(img_file.read()).decode("utf-8")
+                image_type = (
+                    mimetypes.guess_type(random_image_name)[0]
+                    or "image/jpeg"
+                )
 
+                with open(image_path, "rb") as img_file:
+                    image_base64 = base64.b64encode(
+                        img_file.read()
+                    ).decode("utf-8")
+
+                failed_to_load = False
+            else:
+                print("No images found in placeholders directory.")
+
+        except Exception as e:
+            print(f"Could not load local cat image: {e}")
+
+    if not failed_to_load and image_base64:
         cat_image = f'''
-        <image
-            x="600"
-            y="65"
-            width="280"
-            height="210"
-            href="data:{image_type};base64,{image_base64}"
-            preserveAspectRatio="xMidYMid slice"
-        />
-        '''
-    else:
-        print("No images found in placeholders directory.")
-        cat_image = ""
-
-    except Exception as e:
-        print(f"Could not load local cat image: {e}")
-        cat_image = ""
+  <image
+    x="600"
+    y="65"
+    width="280"
+    height="210"
+    href="data:{image_type};base64,{image_base64}"
+    preserveAspectRatio="xMidYMid slice"
+  />
+'''
 
     # --------------------------------------------------------
     # Progress bar
@@ -515,7 +504,7 @@ def generate_widget(data, theme="light"):
       y="0"
       class="lang-text"
     >
-      {language}
+      {html.escape(language)}
       <tspan class="pct-text">
         {percentage:.1f}%
       </tspan>
@@ -623,6 +612,7 @@ def generate_widget(data, theme="light"):
   {''.join(legend)}
 
   <!-- Cat of the Hour -->
+
   <text
     x="600"
     y="40"
@@ -630,23 +620,8 @@ def generate_widget(data, theme="light"):
   >
     Cat of the hour!
   </text>
-    
+
   {cat_image}
-
-
-  <!-- Multi-Color Progress Bar -->
-
-  <g id="progress-bar">
-
-    {''.join(progress_bar)}
-
-  </g>
-
-
-  <!-- Legend -->
-
-  {''.join(legend)}
-
 
 </svg>
 '''
@@ -658,59 +633,55 @@ def generate_widget(data, theme="light"):
 
 if __name__ == "__main__":
 
-    os.makedirs(
-        OUTPUT,
-        exist_ok=True
-    )
+    os.makedirs(OUTPUT, exist_ok=True)
+    os.makedirs(TARGET_DIR, exist_ok=True)
 
     data = fetch_data()
 
     # --------------------------------------------------------
     # Generate light theme SVG
     # --------------------------------------------------------
-    
+
     light_svg = generate_widget(
         data,
         theme="light"
     )
-    
+
     light_path = os.path.join(
         TARGET_DIR,
         "my-widget-light.svg"
     )
-    
+
     with open(
         light_path,
         "w",
         encoding="utf-8"
     ) as f:
-    
+
         f.write(light_svg)
-    
+
     print(f"Generated {light_path}")
-    
-    
+
     # --------------------------------------------------------
     # Generate dark theme SVG
     # --------------------------------------------------------
-    
+
     dark_svg = generate_widget(
         data,
         theme="dark"
     )
-    
+
     dark_path = os.path.join(
         TARGET_DIR,
         "my-widget-dark.svg"
     )
-    
+
     with open(
         dark_path,
         "w",
         encoding="utf-8"
     ) as f:
-    
-        f.write(dark_svg)
-    
-    print(f"Generated {dark_path}")
 
+        f.write(dark_svg)
+
+    print(f"Generated {dark_path}")
