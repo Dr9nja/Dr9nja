@@ -312,6 +312,7 @@ def generate_widget(data, theme="light"):
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
     FILE_PATH = os.path.join(BASE_DIR, "colors.json")
     TARGET_DIR = os.path.abspath(os.path.join(BASE_DIR, '..', 'dist')) # target folder, since the svgs are saved in dist!
+    PLACEHOLDERS_DIR = os.path.join(BASE_DIR, "../dist/placeholders")
     
     try:
         with open(FILE_PATH, "r", encoding="utf-8") as f:
@@ -364,8 +365,9 @@ def generate_widget(data, theme="light"):
     
     cat_url = (
         f"https://cataas.com/cat/says/{quote(random_text)}"
-        f"?fontSize=65&fontColor=white&random={random.randint(1, 999999999)}"
+        f"?fonttSize=65&fontColor=white&random={random.randint(1, 999999999)}"
     )
+    failed_to_load = false
     
     # Download cat image
     try:
@@ -393,6 +395,45 @@ def generate_widget(data, theme="light"):
 
     except requests.RequestException as e:
         print(f"Could not fetch cat image: {e}")
+        cat_image = ""
+        failed_to_load = true
+
+    try:
+    # Get a list of all files in the placeholders directory
+    if os.path.exists(PLACEHOLDERS_DIR):
+        local_images = [f for f in os.listdir(PLACEHOLDERS_DIR) if os.path.isfile(os.path.join(PLACEHOLDERS_DIR, f))]
+    else:
+        local_images = []
+
+    if local_images and failed_to_load:
+        # Pick a random image
+        random_image_name = random.choice(local_images)
+        image_path = os.path.join(PLACEHOLDERS_DIR, random_image_name)
+        
+        # Determine the image type based on file extension
+        ext = os.path.splitext(random_image_name)[1].lower()
+        image_type = f"image/{ext.replace('.', '')}" if ext else "image/jpeg"
+
+        # Read and encode the image
+        with open(image_path, "rb") as img_file:
+            image_base64 = base64.b64encode(img_file.read()).decode("utf-8")
+
+        cat_image = f'''
+        <image
+            x="600"
+            y="65"
+            width="280"
+            height="210"
+            href="data:{image_type};base64,{image_base64}"
+            preserveAspectRatio="xMidYMid slice"
+        />
+        '''
+    else:
+        print("No images found in placeholders directory.")
+        cat_image = ""
+
+    except Exception as e:
+        print(f"Could not load local cat image: {e}")
         cat_image = ""
 
     # --------------------------------------------------------
